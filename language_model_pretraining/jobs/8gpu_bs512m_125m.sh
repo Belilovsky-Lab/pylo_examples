@@ -1,7 +1,3 @@
-# module purge
-
-# source /home/mila/b/benjamin.therien/pylo_install/setup.sh
-# cd /home/mila/b/benjamin.therien/pylo_install/pylo-examples/gpt-training
 
 
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --nproc_per_node=8 \

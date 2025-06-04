@@ -1,8 +1,3 @@
-# module purge
-
-# source /home/mila/b/benjamin.therien/pylo_install/setup.sh
-# cd /home/mila/b/benjamin.therien/pylo_install/pylo-examples/gpt-training
-
 
 
 

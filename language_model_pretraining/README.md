@@ -114,6 +114,9 @@ seed $1
 
 # Adding a schedule and Weight Decay to MuLO or VeLO
 
+![Learning curves comparing MuLO and VeLO with and without learning rate schedules and weight decay](assets/lm_mulo_velo.png)
+
+
 ## Training a GPT model with VeLO + schedule [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2211.09760)
 ```
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --nproc_per_node=8 \
@@ -135,7 +138,7 @@ seed 42
 ```
 
 
-## Training a 125M parameter LM MuLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153) using a cosine decay schedule and weight decay
+## Training a 125M parameter LM MuLO + schedule + WD [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153)
 ```
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --nproc_per_node=8 \
 train.py \
@@ -156,18 +159,7 @@ OPTIM.max_grad_norm 1.0 \
 seed 42
 ```
 
-# Performance
 
-## Training Results
-
-The following table shows the performance comparison between different optimizers on the GPT training task. The results include the hyperparameters used and the loss values at different training steps.
-| Optimizer | Learning Rate | Other Hyperparameters | Loss @ 1k steps | Loss @ 2k steps | Loss @ 3k steps | Loss @ 4k steps | Loss @ 5k steps |
-|-----------|---------------|------------------------|-----------------|-----------------|-----------------|-----------------|-----------------|
-| MuLO      | 1.0           | Default settings       | --              | --              | --              | --              | --              |
-| VeLO      | 1.0           | Default settings       | --              | --              | --              | --              | --              |
-| AdamW     | 1e-3          | β₁=0.9, β₂=0.95, ε=1e-8| --              | --              | --              | --              | --              |
-
-The results demonstrate that learned optimizers (MuLO and VeLO) consistently outperform traditional optimizers like AdamW across all training steps. MuLO achieves the best performance, with approximately 7% lower loss compared to AdamW at the 5k step mark.
 
 ### Data Processing
 
@@ -193,8 +185,10 @@ This will download the dataset and save it in the `data` directory.
 If you use PyLO in your research, please consider citing our work:
 
 ```bibtex
-@article{pylo,
-  title={PyLO Evals: A PyTorch Library for Benchmarking Learned Optimizers},
-  author={},
+@software{pylo2025,
+  author = {Paul Janson, Benjamin Therien, Quentin Anthony, Xialong Huang, Abhinav Moudgil and Eugene Belilovsky},
+  title = {PyLo: A PyTorch Library for Learned Optimizers},
+  year = {2025},
+  url = {https://github.com/Belilovsky-Lab/pylo}
 }
 ```

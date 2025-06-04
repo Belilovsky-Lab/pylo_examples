@@ -100,8 +100,10 @@ CUDA_VISIBLE_DEVICES=0 torchrun
 If you use PyLO in your research, please consider citing our work:
 
 ```bibtex
-@article{pylo,
-  title={PyLO Evals: A PyTorch Library for Benchmarking Learned Optimizers},
-  author={},
+@software{pylo2025,
+  author = {Paul Janson, Benjamin Therien, Quentin Anthony, Xialong Huang, Abhinav Moudgil and Eugene Belilovsky},
+  title = {PyLo: A PyTorch Library for Learned Optimizers},
+  year = {2025},
+  url = {https://github.com/Belilovsky-Lab/pylo}
 }
 ```

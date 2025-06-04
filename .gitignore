@@ -1,3 +1,11 @@
+#custom
+
+language_model_pretraining/data
+language_model_pretraining/wandb
+
+simple_mlp_and_conv/data
+simple_mlp_and_conv/wandb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

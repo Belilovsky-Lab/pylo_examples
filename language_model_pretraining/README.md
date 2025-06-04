@@ -114,7 +114,7 @@ seed $1
 
 # Adding a schedule and Weight Decay to MuLO or VeLO
 
-![Learning curves comparing MuLO and VeLO with and without learning rate schedules and weight decay](assets/lm_mulo_velo.png)
+![Learning curves comparing MuLO and VeLO with and without learning rate schedules and weight decay](../assets/lm_mulo_velo.png)
 
 
 ## Training a GPT model with VeLO + schedule [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2211.09760)

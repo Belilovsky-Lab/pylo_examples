@@ -368,8 +368,8 @@ torchrun --nproc_per_node=4 train.py \
 
 ## Supported Models
 - **vit_tiny_patch16_224**: Tiny Vision Transformer
-- **vit_small_patch16_224**: Small Vision Transformer (default)
-- **vit_base_patch16_224**: Base Vision Transformer
+- **vit_small_patch16_224**: Small Vision Transformer 
+- **vit_base_patch16_224**: Base Vision Transformer (default)
 - **vit_large_patch16_224**: Large Vision Transformer
 
 ## Supported Optimizers

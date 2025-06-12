@@ -26,20 +26,20 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-py311_24.7.1-0-Linux-x86_64.
 bash Miniconda3-py311_24.7.1-0-Linux-x86_64.sh -b -p $PWD/miniconda3
 source $PWD/miniconda3/bin/activate
 
-
-pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1
-pip install tensorflow==2.19.0
-pip install transformers==4.49.0 datasets==3.3.2 tokenizers==0.21.0
-pip install numpy==2.0.2 pandas==2.2.3 matplotlib==3.9.4 seaborn==0.13.2
-pip install timm==1.0.15 wandb==0.19.8
-pip install tqdm==4.66.4 tiktoken==0.9.0
-pip install yacs
-
 # Install custom MUP for MuLO support
 pip install git+https://github.com/bentherien/mup.git
 
+# Install pylo with CUDA support
 git clone https://github.com/belilovskylab/pylo.git
-pip install . --config-settings="--build-option=--cuda"
+cd pylo
+pip install .
+python setup.py install --cuda 
+
+# For logging Set WANDB environment variables
+export WANDB_API_KEY=YOUR_KEY
+export WANDB_PROJECT=pylo_examples
+export WANDB_MODE=online
+
 ```
 
 # GPT Training
@@ -77,7 +77,7 @@ compile True \
 init_lr 2
 ```
 
-# ImageNet Training
+# ViT Training
 
 ## Training ViT with MuLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153)
 ```

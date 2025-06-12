@@ -5,42 +5,16 @@
 
 # Quick Setup
 ```
-apt-get update
-apt install tmux vim rsync htop -y
-tmux
 
-mkdir pylo_examples_install
-cd pylo_examples_install
-
-wget https://repo.anaconda.com/miniconda/Miniconda3-py311_24.7.1-0-Linux-x86_64.sh
-bash Miniconda3-py311_24.7.1-0-Linux-x86_64.sh -b -p $PWD/miniconda3
-source $PWD/miniconda3/bin/activate
-
-# install PyLO
-git clone https://github.com/Belilovsky-Lab/pylo
-cd pylo
-pip install .
-python setup.py install --cuda 
-cd ..
-
-# install custom MuP for compatility with mu-learned optimizers
-git clone https://github.com/bentherien/mup
-cd mup
-pip install -e .
-cd ..
-
-# setup pylo examples
-git clone https://github.com/Belilovsky-Lab/pylo_examples
-cd pylo_examples/language_model_pretraining
+# install environment
 pip install -r requirements.txt
 
 
 # download data
-mkdir data/fineweb_edu_10B
-python tools/download_dataset.py --output_dir data/fineweb_edu_10B
+export PYLO_DATA_DIR=$PWD/data
+mkdir $PYLO_DATA_DIR
+python tools/download_dataset.py --output_dir $PYLO_DATA_DIR
 
-#For logging be sure to set your WANDB API KEY!
-export WANDB_API_KEY=
 ```
 
 # Quick Start: Train a 410M parameter Language model with MuLO or VeLO and replicate our results table
@@ -117,7 +91,7 @@ seed $1
 ![Learning curves comparing MuLO and VeLO with and without learning rate schedules and weight decay](../assets/lm_mulo_velo.png)
 
 
-## Training a GPT model with VeLO + schedule [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2211.09760)
+## Training a GPT model with VeLO + schedule [https://arxiv.org/abs/2211.09760](https://arxiv.org/abs/2211.09760)
 ```
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun --nproc_per_node=8 \
 train.py \
@@ -180,15 +154,3 @@ python fineweb.py --remote_name finweb_edu --local_name finweb_edu
 
 This will download the dataset and save it in the `data` directory.
 
-# Citation
-
-If you use PyLO in your research, please consider citing our work:
-
-```bibtex
-@software{pylo2025,
-  author = {Paul Janson, Benjamin Therien, Quentin Anthony, Xialong Huang, Abhinav Moudgil and Eugene Belilovsky},
-  title = {PyLo: A PyTorch Library for Learned Optimizers},
-  year = {2025},
-  url = {https://github.com/Belilovsky-Lab/pylo}
-}
-```

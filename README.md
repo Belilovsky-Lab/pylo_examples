@@ -18,7 +18,7 @@ While learned optimization has traditionally been tested on small, artificial ta
 
 Run the following code:
 ```
-install_dir=$PWD/torch_lo_install
+install_dir=$PWD/pylo_install
 mkdir $install_dir
 cd $install_dir
 
@@ -62,7 +62,7 @@ init_lr 2
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 \
 train.py --config 'config' \
 --override \
-optimizer_name veLO \
+optimizer_name VeLO \
 compile True \
 init_lr 2
 ```
@@ -76,24 +76,43 @@ optimizer_name AdamW \
 compile True \
 init_lr 2
 ```
+> **Note:** For more detailed setup see inside ./language_model_pretraining
+
 
 # ViT Training
 
+
+
 ## Training ViT with MuLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153)
 ```
-CUDA_VISIBLE_DEVICES=0 
+CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
+--model vit_base_patch16_224 \
+--data-dir path_to_imagenet \
+--dataset imagenet \
+--opt mulo \
+--lr 1.0
 ```
 
 ## Training ViT with VeLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2211.09760)
 ```
-CUDA_VISIBLE_DEVICES=0 torchrun 
+CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
+--model vit_base_patch16_224 \
+--data-dir path_to_imagenet \
+--dataset imagenet \
+--opt velo \
+--lr 1.0
 ```
 
 ## Training ViT with AdamW and cosine annealing [https://arxiv.org/abs/2211.09760](https://arxiv.org/abs/1711.05101)
 ```
-CUDA_VISIBLE_DEVICES=0 torchrun 
+CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
+--model vit_base_patch16_224 \
+--data-dir path_to_imagenet \
+--dataset imagenet \
+--opt adamw \
+--lr 4e-3
 ```
-
+> **Note:** For more detailed setup see inside ./image_classification/vision_transformer
 
 # Citation
 

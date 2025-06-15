@@ -373,8 +373,8 @@ torchrun --nproc_per_node=4 train.py \
 - **vit_large_patch16_224**: Large Vision Transformer
 
 ## Supported Optimizers
-- **velo**: VeLO (Vectorized Learned Optimizer)
-- **mulo**: MuLO (μ-Parameterized Learned Optimizer)
+- **velo**: VeLO [https://arxiv.org/abs/2211.09760](https://arxiv.org/abs/2211.09760)
+- **mulo**: MuLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153)
 - **adamw**: AdamW with optional cosine annealing
 - **sgd**: SGD with momentum
 

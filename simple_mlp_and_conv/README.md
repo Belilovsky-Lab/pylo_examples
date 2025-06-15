@@ -196,7 +196,7 @@ python train.py \
 - **resnet50**: ResNet-50 architecture
 
 ## Supported Optimizers
-- **velo**: VeLO (Vectorized Learned Optimizer)
-- **mulo**: MuLO (μ-Parameterized Learned Optimizer)
+- **velo**: VeLO [https://arxiv.org/abs/2211.09760](https://arxiv.org/abs/2211.09760)
+- **mulo**: MuLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153)
 - **adamw**: AdamW with optional cosine annealing
 - **sgd**: SGD with momentum

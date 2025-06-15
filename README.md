@@ -1,9 +1,6 @@
 # Welcome to PyLO Examples!
 
-
-## PyLO Evals (This Repository)
-
-PyLO Evals complements [PyLO](https://github.com/Belilovsky-Lab/pylo) by providing benchmark code for standard pre-training tasks that are of interest to the ML community. Key features include:
+PyLO Examples complements [PyLO](https://github.com/Belilovsky-Lab/pylo) by providing benchmark code for standard pre-training tasks that are of interest to the ML community. Key features include:
 
 - Implementations of practical, full-scale training runs (not just toy problems)
 - Benchmarks comparing learned optimizers against state-of-the-art optimizers like AdamW with cosine annealing

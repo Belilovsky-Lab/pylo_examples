@@ -47,7 +47,7 @@ export WANDB_MODE=online
 Here are some example commands for running single-GPU meta-training.
 
 
-## Training a GPT model with MuLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153)
+## Training a GPT model with [µLO_M](https://arxiv.org/abs/2406.00153)
 ```
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 \
 train.py --config 'config' \
@@ -57,7 +57,7 @@ compile True \
 init_lr 2
 ```
 
-## Training a GPT model with VeLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2211.09760)
+## Training a GPT model with [VeLO](https://arxiv.org/abs/2211.09760)
 ```
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 \
 train.py --config 'config' \
@@ -67,7 +67,7 @@ compile True \
 init_lr 2
 ```
 
-## Training a GPT model with AdamW and cosine annealing [https://arxiv.org/abs/2211.09760](https://arxiv.org/abs/1711.05101)
+## Training a GPT model with AdamW and cosine annealing
 ```
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 \
 train.py --config 'config' \
@@ -81,19 +81,7 @@ init_lr 2
 
 # ViT Training
 
-
-
-## Training ViT with MuLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2406.00153)
-```
-CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
---model vit_base_patch16_224 \
---data-dir path_to_imagenet \
---dataset imagenet \
---opt mulo \
---lr 1.0
-```
-
-## Training ViT with VeLO [https://arxiv.org/abs/2406.00153](https://arxiv.org/abs/2211.09760)
+## Training ViT with [VeLO](https://arxiv.org/abs/2211.09760)
 ```
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
 --model vit_base_patch16_224 \
@@ -103,7 +91,17 @@ CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
 --lr 1.0
 ```
 
-## Training ViT with AdamW and cosine annealing [https://arxiv.org/abs/2211.09760](https://arxiv.org/abs/1711.05101)
+## Training ViT with [µLO_M](https://arxiv.org/abs/2406.00153)
+```
+CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
+--model vit_base_patch16_224 \
+--data-dir path_to_imagenet \
+--dataset imagenet \
+--opt mulo \
+--lr 1.0
+```
+
+## Training ViT with AdamW and cosine annealing
 ```
 CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node=1 train.py \
 --model vit_base_patch16_224 \

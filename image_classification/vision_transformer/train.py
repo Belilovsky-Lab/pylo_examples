@@ -41,6 +41,7 @@ from timm.optim import create_optimizer_v2, optimizer_kwargs
 from timm.scheduler import create_scheduler_v2, scheduler_kwargs
 from timm.utils import ApexScaler, NativeScaler
 from pylo.optim import VeLO
+from pylo.optim.velo_cuda import VeLO_CUDA
 try:
     from apex import amp
     from apex.parallel import DistributedDataParallel as ApexDDP
@@ -48,7 +49,7 @@ try:
     has_apex = True
 except ImportError:
     has_apex = False
-    
+
 MAX_STEPS = 150_000
 
 try:
@@ -484,7 +485,7 @@ def main():
             file=args.pretrained_path,
             num_classes=-1,  # force head adaptation
         )
-    
+
     if args.dataset=="imagenette":
         args.dataset = "imagenet"
         args.num_classes = 10
@@ -493,7 +494,7 @@ def main():
         args.num_classes = 10
     elif args.dataset == "imagenet":
         args.num_classes = 1000
-    
+
     if "mu" in args.opt:
         if "vit_base_patch16_224" in args.model:
             from mu_vit import mu_vit
@@ -616,7 +617,6 @@ def main():
     #     **args.opt_kwargs,
     # )
 
-
     # setup exponential moving average of model weights, SWA could be used here too
     model_ema = None
     if args.model_ema:
@@ -657,9 +657,7 @@ def main():
         input_img_mode = 'RGB' if data_config['input_size'][0] == 3 else 'L'
     else:
         input_img_mode = args.input_img_mode
-        
 
-    
     dataset_train = create_dataset(
         args.dataset,
         root=args.data_dir,
@@ -676,12 +674,15 @@ def main():
         num_samples=args.train_num_samples,
         trust_remote_code=args.dataset_trust_remote_code,
     )
-    
+
     if "lo" in args.opt:
         print("Using Learned optimizer")
-        if args.opt == "velo":
+        if args.opt == "velo_cuda":
+            print(f"Using VeLO CUDA for num steps {MAX_STEPS}")
+            optimizer = VeLO_CUDA(model.parameters(), lr=1.0,num_steps=MAX_STEPS,legacy=False)
+        elif args.opt == "velo":
             print(f"Using VeLO for num steps {MAX_STEPS}")
-            optimizer = VeLO(model.parameters(), lr=args.lr,num_steps=MAX_STEPS,weight_decay=args.weight_decay)
+            # optimizer = VeLO(model.parameters(), lr=args.lr,num_steps=MAX_STEPS,weight_decay=args.weight_decay)
         else:
             print("Using MuLO")
             from pylo.optim import MuLO_CUDA
@@ -692,7 +693,7 @@ def main():
             **optimizer_kwargs(cfg=args),
             **args.opt_kwargs,
         )
-        
+
     if utils.is_primary(args):
         defaults = copy.deepcopy(optimizer.defaults)
         defaults['weight_decay'] = args.weight_decay  # this isn't stored in optimizer.defaults
@@ -734,7 +735,6 @@ def main():
             loss_scaler=None if args.no_resume_opt else loss_scaler,
             log_info=utils.is_primary(args),
         )
-
 
     if args.val_split:
         dataset_eval = create_dataset(
@@ -916,7 +916,7 @@ def main():
                     group=exp_name,
                     dir=output_dir,
                 )
-                
+
                 if wandb.run.id:
                     with open(os.path.join(output_dir, 'wandb_id.txt'), 'w') as f:
                         f.write(wandb.run.id)
@@ -1048,7 +1048,7 @@ def main():
             if eval_metrics is not None:
                 latest_results['validation'] = eval_metrics
             results.append(latest_results)
-            
+
             if TERMINATE_FLAG:
                 if utils.is_primary(args):
                     _logger.info("Signal received , gracefully terminating")
@@ -1058,7 +1058,6 @@ def main():
             if current_epoch_max_steps >= MAX_STEPS:
                 print(f"Max steps {MAX_STEPS} reached in this epoch, terminating")
                 break
-                
 
     except KeyboardInterrupt:
         pass
@@ -1164,7 +1163,7 @@ def train_one_epoch(
                             value=args.clip_grad,
                             mode=args.clip_mode,
                         )
-                    if isinstance(optimizer, VeLO):
+                    if isinstance(optimizer, VeLO) or isinstance(optimizer, VeLO_CUDA):
                         optimizer.step(_loss)
                     else:
                         optimizer.step()

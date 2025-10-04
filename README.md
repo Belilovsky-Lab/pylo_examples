@@ -27,7 +27,7 @@ source $PWD/miniconda3/bin/activate
 pip install git+https://github.com/bentherien/mup.git
 
 # Install pylo with CUDA support
-git clone https://github.com/belilovskylab/pylo.git
+git clone https://github.com/Belilovsky-Lab/pylo.git
 cd pylo
 pip install .
 python setup.py install --cuda 

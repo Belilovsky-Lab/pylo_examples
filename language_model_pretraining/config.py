@@ -72,10 +72,20 @@ _C.OPTIM.MuLO.step_mult = 0.01
 _C.OPTIM.MuLO.cpkt_path = './MuLO_global_step5000_torch.pth'
 
 
-# VeLO
+# VeLO (legacy - use VeLO_naive or VeLO_CUDA instead)
 _C.OPTIM.VeLO = CN()
 _C.OPTIM.VeLO.num_steps = 5000 # will be adjusted automatically in train.py by num_steps=len(train_loader)*epochs
 _C.OPTIM.VeLO.cpkt_path = './VeLO_torch.pth'
+
+# VeLO_naive
+_C.OPTIM.VeLO_naive = CN()
+_C.OPTIM.VeLO_naive.num_steps = 5000 # will be adjusted automatically in train.py by num_steps=len(train_loader)*epochs
+_C.OPTIM.VeLO_naive.cpkt_path = './VeLO_torch.pth'
+
+# VeLO_CUDA
+_C.OPTIM.VeLO_CUDA = CN()
+_C.OPTIM.VeLO_CUDA.num_steps = 5000 # will be adjusted automatically in train.py by num_steps=len(train_loader)*epochs
+_C.OPTIM.VeLO_CUDA.cpkt_path = './VeLO_CUDA_torch.pth'
 
 def get_config():
     config = _C.clone()

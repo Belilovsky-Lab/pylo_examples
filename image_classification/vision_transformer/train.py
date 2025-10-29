@@ -40,7 +40,7 @@ from timm.models import create_model, safe_model_name, resume_checkpoint, load_c
 from timm.optim import create_optimizer_v2, optimizer_kwargs
 from timm.scheduler import create_scheduler_v2, scheduler_kwargs
 from timm.utils import ApexScaler, NativeScaler
-from pylo.optim import VeLO
+from pylo.optim.Velo_naive import VeLO_naive
 from pylo.optim.velo_cuda import VeLO_CUDA
 try:
     from apex import amp
@@ -680,9 +680,12 @@ def main():
         if args.opt == "velo_cuda":
             print(f"Using VeLO CUDA for num steps {MAX_STEPS}")
             optimizer = VeLO_CUDA(model.parameters(), lr=1.0,num_steps=MAX_STEPS,legacy=False)
+        elif args.opt == "velo_naive":
+            print(f"Using VeLO Naive for num steps {MAX_STEPS}")
+            optimizer = VeLO_naive(model.parameters(), lr=args.lr,num_steps=MAX_STEPS,weight_decay=args.weight_decay)
         elif args.opt == "velo":
-            print(f"Using VeLO for num steps {MAX_STEPS}")
-            # optimizer = VeLO(model.parameters(), lr=args.lr,num_steps=MAX_STEPS,weight_decay=args.weight_decay)
+            print(f"Using VeLO Naive (legacy option, use velo_naive instead) for num steps {MAX_STEPS}")
+            optimizer = VeLO_naive(model.parameters(), lr=args.lr,num_steps=MAX_STEPS,weight_decay=args.weight_decay)
         else:
             print("Using MuLO")
             from pylo.optim import MuLO_CUDA
@@ -1163,7 +1166,7 @@ def train_one_epoch(
                             value=args.clip_grad,
                             mode=args.clip_mode,
                         )
-                    if isinstance(optimizer, VeLO) or isinstance(optimizer, VeLO_CUDA):
+                    if isinstance(optimizer, VeLO_naive) or isinstance(optimizer, VeLO_CUDA):
                         optimizer.step(_loss)
                     else:
                         optimizer.step()

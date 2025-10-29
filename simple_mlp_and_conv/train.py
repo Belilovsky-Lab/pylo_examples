@@ -179,10 +179,22 @@ if args.resume:
 
 criterion = nn.CrossEntropyLoss()
 
-if args.opt == "velo":
-    print("using velo optimizer")
-    from pylo.optim import VeLO
-    optimizer = VeLO(net.parameters(), lr=args.lr,num_steps=150_000,weight_decay=args.weight_decay)
+if args.opt == "velo_naive":
+    print("using VeLO naive optimizer")
+    from pylo.optim.Velo_naive import VeLO_naive
+    optimizer = VeLO_naive(net.parameters(), lr=args.lr,num_steps=150_000,weight_decay=args.weight_decay)
+    # Create a fake scheduler that doesn't modify learning rate
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda _: 1.0)
+elif args.opt == "velo_cuda":
+    print("using VeLO CUDA optimizer")
+    from pylo.optim.velo_cuda import VeLO_CUDA
+    optimizer = VeLO_CUDA(net.parameters(), lr=args.lr,num_steps=150_000,weight_decay=args.weight_decay,legacy=False)
+    # Create a fake scheduler that doesn't modify learning rate
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda _: 1.0)
+elif args.opt == "velo":
+    print("using VeLO optimizer (legacy, redirecting to VeLO_naive)")
+    from pylo.optim.Velo_naive import VeLO_naive
+    optimizer = VeLO_naive(net.parameters(), lr=args.lr,num_steps=150_000,weight_decay=args.weight_decay)
     # Create a fake scheduler that doesn't modify learning rate
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda _: 1.0)
 elif args.opt == "mulo":
@@ -231,7 +243,7 @@ def train(epoch):
             # Scale loss and backward pass
             scaler.scale(loss).backward()
             
-            if args.opt == "velo":
+            if args.opt in ["velo_naive", "velo_cuda", "velo"]:
                 scaler.step(optimizer, loss=loss)
                 scaler.update()
             else:
@@ -241,7 +253,7 @@ def train(epoch):
             outputs = net(inputs)
             loss = criterion(outputs, targets)
             loss.backward()
-            if args.opt == "velo":
+            if args.opt in ["velo_naive", "velo_cuda", "velo"]:
                 optimizer.step(loss=loss)
             else:
                 optimizer.step()

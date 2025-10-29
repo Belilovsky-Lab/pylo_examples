@@ -11,7 +11,9 @@ import torch.distributed as dist
 import torch.nn as nn
 import torch.optim as optim
 from mup import get_shapes, make_base_shapes, set_base_shapes
-from pylo.optim import MuLO_naive, MuLO_CUDA, VeLO
+from pylo.optim import MuLO_naive, MuLO_CUDA
+from pylo.optim.Velo_naive import VeLO_naive
+from pylo.optim.velo_cuda import VeLO_CUDA
 from tqdm import tqdm, trange
 import wandb
 from collections import defaultdict
@@ -85,9 +87,22 @@ def create_optim(config, model):
                               max_grad_norm=config.OPTIM.max_grad_norm,
                               weight_decay=config.OPTIM.weight_decay,
                               load_from_file=config.OPTIM.opt_checkpoint_path)
+    elif config.optimizer_name=='VeLO_naive':
+        optimizer = VeLO_naive(model.parameters(),
+                        lr=config.init_lr,
+                        num_steps=config.iters_max,
+                        weight_decay=config.OPTIM.weight_decay)
+    elif config.optimizer_name=='VeLO_CUDA':
+        optimizer = VeLO_CUDA(model.parameters(),
+                        lr=config.init_lr,
+                        num_steps=config.iters_max,
+                        weight_decay=config.OPTIM.weight_decay,
+                        legacy=False)
     elif config.optimizer_name=='VeLO':
-        optimizer = VeLO(model.parameters(), 
-                        lr=config.init_lr, 
+        # Legacy option, redirects to VeLO_naive
+        print("Warning: 'VeLO' is deprecated, using 'VeLO_naive' instead. Please use 'VeLO_naive' or 'VeLO_CUDA' explicitly.")
+        optimizer = VeLO_naive(model.parameters(),
+                        lr=config.init_lr,
                         num_steps=config.iters_max,
                         weight_decay=config.OPTIM.weight_decay)
     else:
@@ -241,7 +256,7 @@ def train(model, train_loader, optimizer, scheduler, config, run):
             
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
 
-            if config.optimizer_name == 'VeLO':
+            if config.optimizer_name in ['VeLO_naive', 'VeLO_CUDA', 'VeLO']:
                 optimizer.step(mean_loss)
             else:
                 optimizer.step()
@@ -343,6 +358,8 @@ if __name__ == '__main__':
     config.rank = rank
     config.world_size = int(os.environ['WORLD_SIZE'])
     config.OPTIM.VeLO.num_steps = config.iters_max
+    config.OPTIM.VeLO_naive.num_steps = config.iters_max
+    config.OPTIM.VeLO_CUDA.num_steps = config.iters_max
     # Set default values for scheduler if not present
     if not hasattr(config, 'use_lr_scheduler'):
         config.use_lr_scheduler = False

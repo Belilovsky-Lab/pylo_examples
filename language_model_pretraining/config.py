@@ -8,6 +8,7 @@ _C.model_name = 'gpt2_tiny'
 _C.dataset_name = 'HuggingFaceFW/fineweb-edu'
 _C.optimizer_name = 'Adam'
 _C.wandb_project = 'mulo-testing'
+_C.use_wandb = False  # set to True (or pass `use_wandb True` on the CLI) to log to Weights & Biases
 _C.output_dir = './output'
 _C.iters_max = 5000
 _C.gas = 4

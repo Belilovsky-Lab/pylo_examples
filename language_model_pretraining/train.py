@@ -3,7 +3,6 @@ import importlib  # Unused
 import os
 import random
 import time
-import wandb
 import tiktoken
 import numpy as np
 import torch
@@ -13,7 +12,6 @@ import torch.optim as optim
 from mup import get_shapes, make_base_shapes, set_base_shapes
 from pylo.optim import MuLO_naive, MuLO_CUDA, VeLO
 from tqdm import tqdm, trange
-import wandb
 from collections import defaultdict
 import mugpt, gpt
 from contextlib import nullcontext
@@ -266,7 +264,8 @@ def train(model, train_loader, optimizer, scheduler, config, run):
             }
             postfix.update({k:v[-1] for k,v in Timing.run_times_dict.items()})
             pbar.set_postfix(postfix)
-            run.log(postfix)
+            if run is not None:
+                run.log(postfix)
             pbar.update(1)
 
     return mean_loss
@@ -379,7 +378,10 @@ if __name__ == '__main__':
 
     optimizer, scheduler = create_optim(config, model)
 
-    if config.rank == 0:
+    # Only import/initialise wandb when the user opted in. This keeps
+    # the example runnable without wandb installed.
+    if config.rank == 0 and getattr(config, "use_wandb", False):
+        import wandb
         run = wandb.init(
             project=config.wandb_project,
             group=f"{config.dataset_name.replace('/', '_')}_{config.model_name}_{config.optimizer_name}_LR_{config.init_lr}_max-norm_{config.OPTIM.max_grad_norm}{config.suffix}",

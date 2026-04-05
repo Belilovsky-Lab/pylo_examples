@@ -11,7 +11,6 @@ import torchvision.transforms as transforms
 
 import os
 import argparse
-import wandb
 import csv
 from datetime import datetime
 
@@ -35,11 +34,23 @@ parser.add_argument("--opt", type=str, default="velo", help="optimizer")
 parser.add_argument("--dataset", type=str, default="cifar10", help="dataset")
 parser.add_argument('--compile', action='store_true', help='compile model with torch.compile')
 parser.add_argument('--amp', action='store_true', help='use automatic mixed precision')
+parser.add_argument('--wandb', action='store_true', help='log metrics to Weights & Biases')
 
 args = parser.parse_args()
 
-# Initialize wandb
-wandb.init(project="pylo-examples", config=vars(args))
+# Initialize wandb only if requested. Importing wandb lazily keeps the
+# example runnable in environments where the wandb package is not
+# installed.
+if args.wandb:
+    import wandb
+    wandb.init(project="pylo-examples", config=vars(args))
+else:
+    wandb = None
+
+
+def _wandb_log(data):
+    if wandb is not None:
+        wandb.log(data)
 
 # Initialize CSV logging
 csv_file = "log.csv"
@@ -253,7 +264,7 @@ def train(epoch):
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
-        wandb.log({
+        _wandb_log({
             "progress/loss": train_loss/(batch_idx+1),
             "progress/accuracy": 100.*correct/total,
             "epoch": epoch,
@@ -264,7 +275,7 @@ def train(epoch):
     train_acc = 100.*correct/total
     avg_train_loss = train_loss/len(trainloader)
     
-    wandb.log({
+    _wandb_log({
         "train/loss": avg_train_loss,
         "train/accuracy": train_acc,
         "epoch": epoch
@@ -305,7 +316,7 @@ def test(epoch):
     avg_test_loss = test_loss/len(testloader)
     
     # Log validation metrics
-    wandb.log({
+    _wandb_log({
         "val/loss": avg_test_loss,
         "val/accuracy": acc,
         "epoch": epoch
@@ -325,7 +336,10 @@ def test(epoch):
     
     return avg_test_loss, acc
 
-epochs = 150_000 / (len(trainloader))  
+# Respect the --epochs CLI argument. The previous hard-coded
+# `epochs = 150_000 / len(trainloader)` silently overrode --epochs and
+# forced roughly 383 epochs on CIFAR-10 with batch size 128.
+epochs = args.epochs
 for epoch in range(start_epoch, int(epochs)):
     train_loss, train_acc = train(epoch)
     val_loss, val_acc = test(epoch)
@@ -343,4 +357,5 @@ for epoch in range(start_epoch, int(epochs)):
     }
     log_to_csv(log_data)
 
-wandb.finish()
+if wandb is not None:
+    wandb.finish()

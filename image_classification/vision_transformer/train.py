@@ -682,7 +682,7 @@ def main():
             optimizer = VeLO_CUDA(model.parameters(), lr=1.0,num_steps=MAX_STEPS,legacy=False)
         elif args.opt == "velo":
             print(f"Using VeLO for num steps {MAX_STEPS}")
-            # optimizer = VeLO(model.parameters(), lr=args.lr,num_steps=MAX_STEPS,weight_decay=args.weight_decay)
+            optimizer = VeLO(model.parameters(), lr=args.lr, num_steps=MAX_STEPS, weight_decay=args.weight_decay)
         else:
             print("Using MuLO")
             from pylo.optim import MuLO_CUDA
@@ -1219,12 +1219,15 @@ def train_one_epoch(
                     f'Data: {data_time_m.val:.3f} ({data_time_m.avg:.3f})'
                 )
                 
-                wandb.log({
-                    'train/loss': loss_now,
-                    "epoch": epoch,
-                    "update_step": epoch * updates_per_epoch + update_idx,
-                    "train/lr": lr,
-                })
+                # Only log to wandb if it was successfully initialised
+                # (has_wandb is True AND the user passed --log-wandb).
+                if args.log_wandb and has_wandb:
+                    wandb.log({
+                        'train/loss': loss_now,
+                        "epoch": epoch,
+                        "update_step": epoch * updates_per_epoch + update_idx,
+                        "train/lr": lr,
+                    })
 
                 if args.save_images and output_dir:
                     torchvision.utils.save_image(
